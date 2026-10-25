@@ -1,0 +1,48 @@
+[package]
+name = "e4"
+version = "0.1.0"
+authors = ["15213"]
+edition = "2021"
+resolver = "2"
+rust-version = "1.82"
+
+[[bin]]
+name = "e4"
+harness = false # do not use the built-in cargo test harness -> resolve rust-analyzer errors
+
+[profile.release]
+opt-level = "s"
+
+[profile.dev]
+debug = true    # Symbols are nice, and they don't increase the size on Flash
+opt-level = "z"
+
+[patch.crates-io]
+esp-idf-sys = { git = "https://github.com/esp-rs/esp-idf", branch = "master" }
+esp-idf-hal = { git = "https://github.com/esp-rs/esp-idf", branch = "master" }
+esp-idf-svc = { git = "https://github.com/esp-rs/esp-idf", branch = "master" }
+
+[dependencies]
+log = "0.4"
+esp-idf-sys = { version = "0.38.1"}
+esp-idf-hal = { version = "0.47.0"}
+esp-idf-svc = { version = "0.53", features = ["critical-section", "embassy-time-driver", "embassy-sync"] }
+# Remove `generic-queue-8` if you plan to use `embassy-time` WITH `embassy-executor`
+embassy-time = { version = "0.5", features = ["generic-queue-8"] }
+
+[build-dependencies]
+embuild = "0.33.7"
+
+[[package.metadata.esp-idf-sys.extra_components]]
+remote_component = { name = "espressif/esp_tinyusb", version = "3.0.0"}
+bindings_header = "src/include/tusb_bindings.h"
+bindings_module = "tusb"
+
+[[package.metadata.esp-idf-sys.extra_components]]
+component_dirs = ["c_src/hid_desc"]
+
+[[package.metadata.esp-idf-sys.extra_components]]
+remote_component = { name = "espressif/esp_video", version = "2.5.0"}
+
+[[package.metadata.esp-idf-sys.extra_components]]
+component_dirs = ["c_src/esp-video-components/esp_video/examples/common_components/example_video_common"]
